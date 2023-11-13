@@ -1,1 +1,1 @@
-echo "This Task on Test"
+print("Hello, this is a simple echo Python script on Test!")
