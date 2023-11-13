@@ -36,6 +36,13 @@ jobs:
         mkdir -p $HOME/.ssh
         echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > $HOME/.ssh/config
 
+    - name: Merge and Resolve Conflict
+      run: |
+        git checkout test  
+        git merge prod     
+        git commit -m "Automatically resolve merge conflict"
+        git push origin test
+
     - name: Deploy to EC2
       run: |
         if [ "${{ github.event_name }}" == "push" ]; then
