@@ -36,19 +36,13 @@ jobs:
         mkdir -p $HOME/.ssh
         echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > $HOME/.ssh/config
 
-    - name: Merge and Resolve Conflict
-      run: |
-        git checkout test  
-        git merge prod     
-        git commit -m "Automatically resolve merge conflict"
-        git push origin test
 
     - name: Deploy to EC2
       run: |
-        if [ "${{ github.event_name }}" == "push" ]; then
-          if [ "${{ github.ref }}" == "refs/heads/prod" ]; then
-            ssh -i Assignment.pem -t ubuntu@ec2-54-167-125-28.compute-1.amazonaws.com "cd /home/ubuntu/python2 && git pull origin prod && python3 main.py"
-          elif [ "${{ github.ref }}" == "refs/heads/test" ] && [ "${{ github.actor }}" != "ppmekhia007" ]; then
-            ssh -i Assignment.pem -t ubuntu@ec2-52-3-189-203.compute-1.amazonaws.com "cd /home/ubuntu/python2 && git pull origin test && git checkout prod && git merge test && git push origin prod && python3 main.py"
-          fi
+	if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/test" ] && [ "${{ github.actor }}" != "ppmekhia007" ]; then
+          ssh -i Assignment.pem -t ubuntu@ec2-54-167-125-28.compute-1.amazonaws.com "cd /home/ubuntu/python-task && git pull origin test && git checkout prod && git merge test && git push origin prod && python3 main.py"
+        else
+          echo "Skipping deployment. Not a push event to the 'test' branch."
         fi
+
+        
